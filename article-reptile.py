@@ -1,42 +1,30 @@
-# python-reptile
+#!/usr/bin/python
+# coding=utf-8
 
-python 爬虫程序
+# 公众号文章爬虫脚本 来源：知乎文章
+# 打包python可执行文件，执行 pyinstaller article-reptile.py，将 dist 中 article-reptile 目录替换到根目录，其他无关文件删除
+# 有python环境，可在根目录执行 python article-reptile.py
+# 没有python环境，可在根目录执行 ./article-reptile/article-reptile
 
-# 实现功能
+import requests
+import re
+import os
+import time
+import fileinput
+import sys
+from bs4 import BeautifulSoup
 
-输入知乎文章链接，爬取文章内容，按一定格式写入本地文件
+# 多色输出
+def color_print(str, type):
+    if (type == 'success'):
+        print("\033[32m" + str + "\033[0m")
+    elif (type == 'danger'):
+        print("\033[31m" + str + "\033[0m")
+    elif (type == 'warning'):
+        print("\033[33m" + str + "\033[0m")
+    else:
+        print(str)
 
-# 使用方式
-
-## 目录解释
-
-* article-reptile.py: 实现爬虫的文件
-* article-reptile: article-reptile.py 打包为可执行文件后的目录，其中的 article-reptile文件 可在无python linux环境中直接运行
-* src: 个人在做爬虫应用项目中的一部分目录，按实际情况定，当前爬虫程序写入本地文件时，会依赖此目录结构写入
-
-## 配置环境
-
-python v3, pip v3, 安装程序中需要的 requests模块，bs4模块
-
-## 使用
-
-## 有python环境：
-
-```sh
-python article-reptile.py
-```
-
-## 无python环境：
-
-```sh
-./article-reptile/article-reptile
-```
-
-# 实现思路
-
-## requests 模块获取文章内容，BeautifulSoup 初步解析
-
-```python
 # 获取文档
 def get_remote_html():
     # url = 'https://zhuanlan.zhihu.com/p/619085442'
@@ -46,11 +34,7 @@ def get_remote_html():
     html = req.text
     domSoup = BeautifulSoup(html, 'html.parser')  # 用BeautifulSoup解析
     return domSoup
-```
 
-## 解析爬虫结果，生成js dom树节点
-
-```python
 # 解析dom
 def get_parsed_dom(domObj):
     ret = {'type': '', 'class': ''}
@@ -119,11 +103,7 @@ def get_html_info(domSoup):
             htmlInfo['content'].append(parseDom)
 
     return htmlInfo
-```
 
-## 将内容写入本地文件
-
-```python
 # 写入文件
 def write_file(htmlInfo):
     # 时间
@@ -255,16 +235,12 @@ def write_file(htmlInfo):
     newHtml.truncate()
     newHtml.write(''.join(newHtmlLines))
     newHtml.close()
-```
 
-## 主程序入口
-
-```python
 # 主程序
 def main():
     domSoup = get_remote_html()
     htmlInfo = get_html_info(domSoup)
     write_file(htmlInfo)
 
+
 main()
-```
